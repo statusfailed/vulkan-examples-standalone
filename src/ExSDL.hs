@@ -415,7 +415,10 @@ windowInstanceCreateInfo window = do
                                               }
           , enabledLayerNames     = requiredLayers
           , enabledExtensionNames = requiredExtensions
-          } ::& debugUtilsMessengerCreateInfo :& ()
+          , next                  = (debugUtilsMessengerCreateInfo, ())
+          }
+    -- ::& debugUtilsMessengerCreateInfo
+    -- :&  ()
 
 createGraphicalDevice
   :: Instance
@@ -612,11 +615,10 @@ pickGraphicalPhysicalDevice inst surface requiredExtensions desiredFormat = do
 
 debugUtilsMessengerCreateInfo :: DebugUtilsMessengerCreateInfoEXT
 debugUtilsMessengerCreateInfo = zero
-  { messageSeverity = -- DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT
-                      -- .|. DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT
-                      -- .|.
-                      DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT
-                        .|. DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT
+  { messageSeverity = DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT
+                      .|. DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT
+                      .|. DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT
+                      .|. DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT
   , messageType     = DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT
                       .|. DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT
                       .|. DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT
