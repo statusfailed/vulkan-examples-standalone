@@ -441,7 +441,7 @@ createGraphicalDevice inst surface = do
       { queueCreateInfos      = V.fromList
         [ SomeStruct $ zero { queueFamilyIndex = i
                             , queuePriorities = [1]
-                            , flags = DEVICE_QUEUE_CREATE_PROTECTED_BIT
+                            , flags = zero -- DEVICE_QUEUE_CREATE_PROTECTED_BIT
                             }
         | i <- nub [graphicsQueueFamilyIndex, presentQueueFamilyIndex]
         ]
@@ -453,12 +453,12 @@ createGraphicalDevice inst surface = do
   graphicsQueue <- getDeviceQueue2
     dev
     zero { queueFamilyIndex = graphicsQueueFamilyIndex
-         , flags            = DEVICE_QUEUE_CREATE_PROTECTED_BIT
+         , flags            = zero -- DEVICE_QUEUE_CREATE_PROTECTED_BIT
          }
   presentQueue <- getDeviceQueue2
     dev
     zero { queueFamilyIndex = presentQueueFamilyIndex
-         , flags            = DEVICE_QUEUE_CREATE_PROTECTED_BIT
+         , flags            = zero -- DEVICE_QUEUE_CREATE_PROTECTED_BIT
          }
   let
     swapchainCreateInfo :: SwapchainCreateInfoKHR '[]
