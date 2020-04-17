@@ -350,13 +350,13 @@ withVulkanWindow appName width height = do
   window             <- managed $ withWindow appName width height
   instanceCreateInfo <- windowInstanceCreateInfo window
   inst               <- managed $ withInstance instanceCreateInfo Nothing
---   _                  <- managed
---     $ withDebugUtilsMessengerEXT inst debugUtilsMessengerCreateInfo Nothing
---   liftIO $ submitDebugUtilsMessageEXT
---     inst
---     DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT
---     DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT
---     zero { message = "Debug Message Test" }
+  _                  <- managed
+    $ withDebugUtilsMessengerEXT inst debugUtilsMessengerCreateInfo Nothing
+  submitDebugUtilsMessageEXT
+    inst
+    DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT
+    DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT
+    zero { message = "Debug Message Test" }
   surface <- managed $ withSDLWindowSurface inst window
   (dev, graphicsQueue, graphicsQueueFamilyIndex, presentQueue, swapchainFormat, swapchainExtent, swapchain) <-
     createGraphicalDevice inst surface
@@ -401,25 +401,21 @@ windowHeight = 1080
 windowInstanceCreateInfo
   :: MonadIO m
   => SDL.Window
-  -> m (InstanceCreateInfo '[])
+  -> m (InstanceCreateInfo '[DebugUtilsMessengerCreateInfoEXT])
 windowInstanceCreateInfo window = do
   windowExtensions <-
     liftIO $ traverse BS.packCString =<< SDL.vkGetInstanceExtensions window
-  -- let requiredLayers = ["VK_LAYER_LUNARG_standard_validation"]
-  -- NOTE: I think this has to change on newer versions of vulkan(?)
   let requiredLayers = ["VK_LAYER_KHRONOS_validation"]
-      requiredExtensions = V.fromList windowExtensions
-        -- the EXT_DEBUG_UTILS_EXTENSION_NAME stuff seemed to cause a segfault,
-        -- so i removed it.
-        --V.fromList $ EXT_DEBUG_UTILS_EXTENSION_NAME : windowExtensions
-  pure zero
-    { next                  = () -- (debugUtilsMessengerCreateInfo, ())
-    , applicationInfo       = Just zero { applicationName = Just appName
-                                        , apiVersion      = MAKE_VERSION 1 1 0
-                                        }
-    , enabledLayerNames     = requiredLayers
-    , enabledExtensionNames = requiredExtensions
-    }
+      requiredExtensions =
+        V.fromList $ EXT_DEBUG_UTILS_EXTENSION_NAME : windowExtensions
+  pure
+    $   zero
+          { applicationInfo       = Just zero { applicationName = Just appName
+                                              , apiVersion = MAKE_VERSION 1 1 0
+                                              }
+          , enabledLayerNames     = requiredLayers
+          , enabledExtensionNames = requiredExtensions
+          } ::& debugUtilsMessengerCreateInfo :& ()
 
 createGraphicalDevice
   :: Instance
@@ -572,9 +568,7 @@ pickGraphicalPhysicalDevice inst surface requiredExtensions desiredFormat = do
   getPresentQueueIndices :: MonadIO m => PhysicalDevice -> m (V.Vector Word32)
   getPresentQueueIndices dev = do
     -- TODO: implement getNum...
-    -- NOTE: had to change from getPhysicalDeviceQueueFamilyProperties2 @'[] because
-    -- of segfault.
-    numQueues <- V.length <$> getPhysicalDeviceQueueFamilyProperties dev
+    numQueues <- V.length <$> getPhysicalDeviceQueueFamilyProperties2 @'[] dev
     let queueIndices = V.generate (fromIntegral numQueues) fromIntegral
     V.filterM
       (\i -> (True ==) <$> getPhysicalDeviceSurfaceSupportKHR dev i surface)
@@ -626,12 +620,11 @@ debugUtilsMessengerCreateInfo = zero
   , messageType     = DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT
                       .|. DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT
                       .|. DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT
-  --, pfnUserCallback = debugCallbackPtr
+  , pfnUserCallback = debugCallbackPtr
   }
 
--- not used, so commented
---foreign import ccall unsafe "DebugCallback.c &debugCallback"
-  --debugCallbackPtr :: PFN_vkDebugUtilsMessengerCallbackEXT
+foreign import ccall unsafe "DebugCallback.c &debugCallback"
+  debugCallbackPtr :: PFN_vkDebugUtilsMessengerCallbackEXT
 
 ----------------------------------------------------------------
 -- SDL helpers
