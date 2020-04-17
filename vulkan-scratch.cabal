@@ -20,9 +20,25 @@ extra-source-files:  CHANGELOG.md
 executable vulkan-scratch
   main-is:              Main.hs
   hs-source-dirs:       src
-  -- other-modules:
-  -- other-extensions:
+  other-modules:        Info, ExSDL, ShaderQQ
+  default-extensions: AllowAmbiguousTypes CPP DataKinds DefaultSignatures DeriveAnyClass DerivingStrategies DuplicateRecordFields FlexibleContexts FlexibleInstances GADTs GeneralizedNewtypeDeriving InstanceSigs LambdaCase MagicHash NoMonomorphismRestriction OverloadedStrings PartialTypeSignatures PatternSynonyms PolyKinds QuantifiedConstraints RankNTypes RecordWildCards RoleAnnotations ScopedTypeVariables StandaloneDeriving Strict TypeApplications TypeFamilyDependencies TypeOperators TypeSynonymInstances UndecidableInstances ViewPatterns
   build-depends:        base
                       , vulkan >= 3.1.0.0
                       , pretty-simple >= 3.2.1.0
+                      , text
+                      , bytestring
+                      , transformers
+                      , file-embed
+                      , template-haskell
+                      , temporary
+                      , extra
+                      , typed-process
+                      , sdl2
+                      , vector
+                      , say
+                      , managed
   default-language:     Haskell2010
+	--c-sources:
+			--examples/sdl-triangle/DebugCallback.c
+	--build-tool-depends:
+			--glslang:glslang
