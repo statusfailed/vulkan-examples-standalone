@@ -626,11 +626,12 @@ debugUtilsMessengerCreateInfo = zero
   , messageType     = DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT
                       .|. DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT
                       .|. DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT
-  , pfnUserCallback = debugCallbackPtr
+  --, pfnUserCallback = debugCallbackPtr
   }
 
-foreign import ccall unsafe "DebugCallback.c &debugCallback"
-  debugCallbackPtr :: PFN_vkDebugUtilsMessengerCallbackEXT
+-- not used, so commented
+--foreign import ccall unsafe "DebugCallback.c &debugCallback"
+  --debugCallbackPtr :: PFN_vkDebugUtilsMessengerCallbackEXT
 
 ----------------------------------------------------------------
 -- SDL helpers

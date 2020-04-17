@@ -3,7 +3,7 @@ cabal-version:       >=1.10
 -- init'.  For further documentation, see
 -- http://haskell.org/cabal/users-guide/
 
-name:                vulkan-scratch
+name:                vulkan-examples-standalone
 version:             0.1.0.0
 -- synopsis:
 -- description:
@@ -17,7 +17,7 @@ maintainer:          sf@statusfailed.com
 build-type:          Simple
 extra-source-files:  CHANGELOG.md
 
-executable vulkan-scratch
+executable vulkan-examples-standalone
   main-is:              Main.hs
   hs-source-dirs:       src
   other-modules:        Info, ExSDL, ShaderQQ
